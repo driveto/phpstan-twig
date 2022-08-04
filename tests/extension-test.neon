@@ -1,0 +1,3 @@
+parameters:
+	twig:
+		twigEnvironmentLoader: tests/TwigEnvironmentLoader.php

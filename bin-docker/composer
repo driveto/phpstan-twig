@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( dirname "$DIR")"
+
+# shellcheck source=bin-docker/_tty.sh
+source "${DIR}/_tty.sh"
+
+docker_run \
+	--volume "$PROJECT_ROOT":"$PROJECT_ROOT":delegated \
+	--workdir "$(pwd)" \
+	--user $(id -u):$(id -g) \
+	composer:2.3.10 "$@"

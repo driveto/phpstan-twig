@@ -1,0 +1,17 @@
+parametersSchema:
+	twig: structure([
+		twigEnvironmentLoader: string()
+	])
+
+services:
+	- PhpParser\ParserFactory
+	- Driveto\PhpstanTwig\Twig\TwigAnalyzer
+	- Driveto\PhpstanTwig\Twig\TwigLoadTemplateDataExtractor
+	- Driveto\PhpstanTwig\Twig\TwigNodeTraverser
+	- Driveto\PhpstanTwig\Twig\TwigRenderMethodDataExtractor
+	- Driveto\PhpstanTwig\Twig\TwigToPhpCompiler
+	-
+		class: Driveto\PhpstanTwig\Rule\TwigCheckRule
+		tags:
+			- @PHPStan\Rules\RegistryFactory::RULE_TAG
+	- Driveto\PhpstanTwig\Twig\TwigEnvironmentFactory(%twig.twigEnvironmentLoader%)
