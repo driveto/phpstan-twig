@@ -1,0 +1,16 @@
+includes:
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+	ignoreErrors:
+		- '#is not covered by backward compatibility promise#'
+		-
+			message: '#Parameter \#1 \$rules of class PHPStan\\Rules\\Registry constructor expects array\<PHPStan\\Rules\\Rule\>, array given\.#'
+			path: src/Twig/TwigAnalyzer.php
+			count: 1
+		-
+			message: '#Parameter \#1 \$collectors of class PHPStan\\Collectors\\Registry constructor expects array\<PHPStan\\Collectors\\Collector\>, array given\.#'
+			path: src/Twig/TwigAnalyzer.php
+			count: 1
