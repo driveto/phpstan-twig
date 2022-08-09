@@ -42,6 +42,9 @@ class TwigNodeTraverser
 		$nodeTraverser->addVisitor(new AddPhpDocsNodeVisitor($contextTypes));
 		$nodeTraverser->addVisitor(new RemoveTwigEscapeFilter());
 		$nodeTraverser->addVisitor(new ReplaceTwigGetAttribute());
+		$cleanAst = $nodeTraverser->traverse($cleanAst);
+
+		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor(new RefactorTwigForLoop());
 		$cleanAst = $nodeTraverser->traverse($cleanAst);
 

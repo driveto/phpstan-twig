@@ -3,22 +3,18 @@
 namespace Driveto\PhpstanTwig\Twig\NodeVisitor;
 
 use PhpParser\Node;
-use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use function array_unshift;
 use function sprintf;
 
 class RefactorTwigForLoop extends NodeVisitorAbstract
 {
 
-	private int $depth;
+	private int $depth = 0;
 
-	public function __construct()
-	{
-		$this->depth = 0;
-	}
+	/** @var array<int, string> */
+	private array $loopValuesByDepth = [];
 
-	public function leaveNode(Node $node)
+	public function enterNode(Node $node)
 	{
 		//remove $context['_parent'] = $context;
 		if (
@@ -32,26 +28,76 @@ class RefactorTwigForLoop extends NodeVisitorAbstract
 			&& $node->expr->expr instanceof Node\Expr\Variable
 			&& $node->expr->expr->name === 'context'
 		) {
-			return NodeTraverser::REMOVE_NODE;
+			$this->depth++;
+
+			return new Node\Stmt\Expression(
+				new Node\Expr\Assign(
+					new Node\Expr\Variable($this->getCurrentContextName($this->depth)),
+					new Node\Expr\Array_([], ['kind' => Node\Expr\Array_::KIND_SHORT]),
+				)
+			);
+		}
+
+		if (
+			$node instanceof Node\Stmt\Expression
+			&& $node->expr instanceof Node\Expr\Assign
+			&& $node->expr->var instanceof Node\Expr\ArrayDimFetch
+			&& $node->expr->var->var instanceof Node\Expr\Variable
+			&& $node->expr->var->var->name === 'context'
+			&& $node->expr->var->dim instanceof Node\Scalar\String_
+			&& $node->expr->var->dim->value === '_seq'
+		) {
+			$node->expr->var->var->name = $this->getCurrentContextName($this->depth);
+
+			return $node;
 		}
 
 		if ($node instanceof Node\Stmt\Foreach_) {
-			if ($node->keyVar instanceof Node\Expr\ArrayDimFetch
-				&& $node->keyVar->var instanceof Node\Expr\Variable
-				&& $node->keyVar->var->name === 'context'
-				&& $node->keyVar->dim instanceof Node\Scalar\String_
-				&& $node->keyVar->dim->value === '_key'
+			if ($node->expr instanceof Node\Expr\ArrayDimFetch
+				&& $node->expr->var instanceof Node\Expr\Variable
+				&& $node->expr->var->name === 'context'
+				&& $node->expr->dim instanceof Node\Scalar\String_
+				&& $node->expr->dim->value === '_seq'
 			) {
-				$this->depth++;
-
-				$oldKeyVar = clone $node->keyVar;
-				$node->keyVar = new Node\Expr\Variable($this->getCurrentContextName());
-				array_unshift($node->stmts, new Node\Stmt\Expression(new Node\Expr\Assign(
-					$oldKeyVar,
-					clone $node->keyVar,
-				)));
+				$node->expr->var->name = $this->getCurrentContextName($this->depth);
 			}
 
+			if ($node->keyVar instanceof Node\Expr\ArrayDimFetch
+			) {
+				$node->keyVar = new Node\Expr\Variable($this->getCurrentContextKeyName());
+			}
+
+			if ($node->valueVar instanceof Node\Expr\ArrayDimFetch
+				&& $node->valueVar->var instanceof Node\Expr\Variable
+				&& $node->valueVar->var->name === 'context'
+				&& $node->valueVar->dim instanceof Node\Scalar\String_
+			) {
+				$this->loopValuesByDepth[$this->depth] = $node->valueVar->dim->value;
+
+				$node->valueVar->var->name = $this->getCurrentContextName($this->depth);
+			}
+
+			return $node;
+		}
+
+		if ($this->depth > 0
+			&& $node instanceof Node\Expr\ArrayDimFetch
+			&& $node->var instanceof Node\Expr\Variable
+			&& $node->var->name === 'context'
+			&& $node->dim instanceof Node\Scalar\String_
+		) {
+			$variableKey = $node->dim->value;
+			if ($variableKey === '_key') {
+				$node->var->name = $this->getCurrentContextKeyName();
+			} else {
+				foreach ($this->loopValuesByDepth as $depth => $value) {
+					if ($node->dim->value !== $value) {
+						continue;
+					}
+
+					$node->var->name = $this->getCurrentContextName($depth);
+				}
+			}
 			return $node;
 		}
 
@@ -67,11 +113,13 @@ class RefactorTwigForLoop extends NodeVisitorAbstract
 			&& $node->expr->expr->dim instanceof Node\Scalar\String_
 			&& $node->expr->expr->dim->value === '_parent'
 		) {
-			return NodeTraverser::REMOVE_NODE;
+			$node = new Node\Stmt\Echo_([new Node\Scalar\String_('not important')]);
+			return $node;
 		}
 
 		if ($node instanceof Node\Stmt\Unset_) {
-			return NodeTraverser::REMOVE_NODE;
+			$node = new Node\Stmt\Echo_([new Node\Scalar\String_('not important')]);
+			return $node;
 		}
 
 		if ($node instanceof Node\Stmt\Expression
@@ -83,15 +131,29 @@ class RefactorTwigForLoop extends NodeVisitorAbstract
 			&& $node->expr->expr->left->name instanceof Node\Name
 			&& $node->expr->expr->left->name->toString() === 'array_intersect_key'
 		) {
-			return NodeTraverser::REMOVE_NODE;
+			$node->expr = new Node\Expr\FuncCall(
+				new Node\Name('unset'),
+				[
+					new Node\Arg(new Node\Expr\Variable($this->getCurrentContextName($this->depth))),
+					new Node\Arg(new Node\Expr\Variable($this->getCurrentContextKeyName())),
+				],
+			);
+
+			$this->depth--;
+			return $node;
 		}
 
 		return null;
 	}
 
-	private function getCurrentContextName(): string
+	private function getCurrentContextName(int $depth): string
 	{
-		return sprintf('contextForeach%dKey', $this->depth);
+		return sprintf('contextForeach%d', $depth);
+	}
+
+	private function getCurrentContextKeyName(): string
+	{
+		return sprintf('contextForeach%sKey', $this->depth);
 	}
 
 }

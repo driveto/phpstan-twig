@@ -67,6 +67,51 @@ class TwigCheckRuleTest extends RuleTestCase
 				],
 			],
 		];
+
+		yield 'nested methods call shows no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case6/Controller.php',
+			[],
+		];
+
+		yield 'basic for loop shows no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case7/Controller.php',
+			[],
+		];
+
+		yield 'basic for loop with unknown variable shows error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case8/Controller.php',
+			[
+				[
+					'Offset \'letter\' does not exist on array{numbers: array{int, int, int, int, int}, _seq: array{int, int, int, int, int}, number: int, _key: 0|1|2|3|4}.',
+					12,
+				],
+			],
+		];
+
+		yield 'basic for loop with variable out of scope shows error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case9/Controller.php',
+			[
+				[
+					'Offset \'number\' does not exist on array{numbers: array<int|string, int>, _seq: array<int|string, int>, number?: int, _key?: int|string}.',
+					12,
+				],
+			],
+		];
+
+		yield 'basic for loop with variables shows no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case10/Controller.php',
+			[],
+		];
+
+		yield 'nested for loop resolved context correctly and shows no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case11/Controller.php',
+			[],
+		];
+
+		yield 'for loop with method call in argument shows no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case12/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
