@@ -9,6 +9,7 @@ use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveDefaultNullCoalesce;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveTwigEscapeFilter;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\ReplaceTwigArrayAccess;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\ReplaceTwigGetAttribute;
+use Driveto\PhpstanTwig\Twig\NodeVisitor\SplitMainContextAndBlocksVisitor;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
@@ -26,10 +27,19 @@ class TwigNodeTraverser
 	}
 
 	/** @param array<int|string, string> $contextTypes */
-	public function traverse(string $compiledTemplate, array $contextTypes): string
+	public function traverse(
+		string $templateName,
+		bool $renderMainContent,
+		string $compiledTemplate,
+		array $contextTypes,
+	): string
 	{
 		$ast = $this->parser->parse($compiledTemplate);
 		assert($ast !== null);
+
+		$nodeTraverser = new NodeTraverser();
+		$nodeTraverser->addVisitor(new SplitMainContextAndBlocksVisitor($renderMainContent, $templateName));
+		$cleanAst = $nodeTraverser->traverse($ast);
 
 		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor(new ReplaceTwigArrayAccess());

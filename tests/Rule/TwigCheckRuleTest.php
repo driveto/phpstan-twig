@@ -137,6 +137,11 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case15/Controller.php',
 			[],
 		];
+
+		yield 'variable defined in main context and used in block shows no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case16/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array

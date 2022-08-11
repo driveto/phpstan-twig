@@ -3,6 +3,7 @@
 namespace Driveto\PhpstanTwig\Rule;
 
 use Driveto\PhpstanTwig\Twig\TwigAnalyzer;
+use Driveto\PhpstanTwig\Twig\TwigLoadTemplateBlockDataExtractor;
 use Driveto\PhpstanTwig\Twig\TwigLoadTemplateDataExtractor;
 use Driveto\PhpstanTwig\Twig\TwigNodeTraverser;
 use Driveto\PhpstanTwig\Twig\TwigRenderMethodDataExtractor;
@@ -29,6 +30,8 @@ final class TwigCheckRule implements Rule
 
 	private TwigLoadTemplateDataExtractor $twigLoadTemplateDataExtractor;
 
+	private TwigLoadTemplateBlockDataExtractor $twigLoadTemplateBlockDataExtractor;
+
 	private TwigToPhpCompiler $twigToPhpCompiler;
 
 	private TwigNodeTraverser $twigNodeTraverser;
@@ -37,6 +40,7 @@ final class TwigCheckRule implements Rule
 		TwigAnalyzer $twigAnalyzer,
 		TwigRenderMethodDataExtractor $twigRenderMethodDataExtractor,
 		TwigLoadTemplateDataExtractor $loadTemplateDataExtractor,
+		TwigLoadTemplateBlockDataExtractor $twigLoadTemplateBlockDataExtractor,
 		TwigToPhpCompiler $twigToPhpCompiler,
 		TwigNodeTraverser $twigNodeTraverser
 	)
@@ -44,6 +48,7 @@ final class TwigCheckRule implements Rule
 		$this->twigAnalyzer = $twigAnalyzer;
 		$this->twigRenderMethodDataExtractor = $twigRenderMethodDataExtractor;
 		$this->twigLoadTemplateDataExtractor = $loadTemplateDataExtractor;
+		$this->twigLoadTemplateBlockDataExtractor = $twigLoadTemplateBlockDataExtractor;
 		$this->twigToPhpCompiler = $twigToPhpCompiler;
 		$this->twigNodeTraverser = $twigNodeTraverser;
 	}
@@ -55,12 +60,17 @@ final class TwigCheckRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
+		$renderMainContent = true;
 		if ($this->twigRenderMethodDataExtractor->isNodeSupported($node, $scope)) {
 			$templateName = $this->twigRenderMethodDataExtractor->extractTemplateName($node, $scope);
 			$localContextTypes = $this->twigRenderMethodDataExtractor->extract($node, $scope);
 		} elseif ($this->twigLoadTemplateDataExtractor->isNodeSupported($node, $scope)) {
 			$templateName = $this->twigLoadTemplateDataExtractor->extractTemplateName($node, $scope);
 			$localContextTypes = $this->twigLoadTemplateDataExtractor->extract($node, $scope);
+		} elseif ($this->twigLoadTemplateBlockDataExtractor->isNodeSupported($node, $scope)) {
+			$templateName = $this->twigLoadTemplateBlockDataExtractor->extractTemplateName($node, $scope);
+			$localContextTypes = $this->twigLoadTemplateBlockDataExtractor->extract($node, $scope);
+			$renderMainContent = false;
 		} else {
 			return [];
 		}
@@ -83,6 +93,8 @@ final class TwigCheckRule implements Rule
 		}
 
 		$templateWithTypes = $this->twigNodeTraverser->traverse(
+			$templateName,
+			$renderMainContent,
 			$compiledTemplate,
 			array_merge($this->twigToPhpCompiler->getGlobalTypes(), $localContextTypes),
 		);

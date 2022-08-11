@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
@@ -38,6 +39,8 @@ abstract class DataExtractor
 			return 'string';
 		} elseif ($value instanceof IntegerType) {
 			return 'int';
+		} elseif ($value instanceof FloatType) {
+			return 'float';
 		} elseif ($value instanceof MixedType) {
 			return 'mixed';
 		} elseif ($value instanceof ConstantArrayType) {
