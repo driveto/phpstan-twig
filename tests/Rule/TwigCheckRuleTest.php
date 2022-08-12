@@ -247,6 +247,16 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case24/Controller.php',
 			[],
 		];
+
+		yield 'union types are resolved correctly and show errors' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case25/Controller.php',
+			[
+				[
+					'Argument of an invalid type array<int>|null supplied for foreach, only iterables are supported.',
+					1,
+				],
+			],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
