@@ -5,10 +5,10 @@ namespace Driveto\PhpstanTwig\Twig\NodeVisitor;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 
-class RemoveTwigEscapeFilter extends NodeVisitorAbstract
+class ReplaceTwigFilters extends NodeVisitorAbstract
 {
 
-	public function enterNode(Node $node)
+	public function leaveNode(Node $node)
 	{
 		if ($node instanceof Node\Expr\FuncCall
 			&& $node->name instanceof Node\Name
@@ -31,6 +31,12 @@ class RemoveTwigEscapeFilter extends NodeVisitorAbstract
 				&& $node->args[0] instanceof Node\Arg
 			) {
 				return $node->args[0]->value;
+			} elseif (
+				$funcName === 'twig_slice'
+				&& isset($node->args[1])
+				&& $node->args[1] instanceof Node\Arg
+			) {
+				return $node->args[1]->value;
 			}
 
 			return $node;

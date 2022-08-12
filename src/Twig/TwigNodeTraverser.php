@@ -8,9 +8,9 @@ use Driveto\PhpstanTwig\Twig\NodeVisitor\CallDisplayOnParentTemplateDirectly;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RefactorTwigForLoop;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveAlwaysTrueConditionOnConstantString;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveDefaultNullCoalesce;
-use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveTwigEscapeFilter;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RenameTwigTemplateClass;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\ReplaceTwigArrayAccess;
+use Driveto\PhpstanTwig\Twig\NodeVisitor\ReplaceTwigFilters;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\ReplaceTwigGetAttribute;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\SplitMainContextAndBlocksVisitor;
 use PhpParser\NodeTraverser;
@@ -55,7 +55,7 @@ class TwigNodeTraverser
 
 		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor(new AddPhpDocsNodeVisitor($contextTypes));
-		$nodeTraverser->addVisitor(new RemoveTwigEscapeFilter());
+		$nodeTraverser->addVisitor(new ReplaceTwigFilters());
 		$nodeTraverser->addVisitor(new ReplaceTwigGetAttribute());
 		$cleanAst = $nodeTraverser->traverse($cleanAst);
 

@@ -242,6 +242,11 @@ class TwigCheckRuleTest extends RuleTestCase
 				],
 			],
 		];
+
+		yield 'types on for loop with slice resolved correctly and show no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case24/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
