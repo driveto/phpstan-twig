@@ -257,6 +257,11 @@ class TwigCheckRuleTest extends RuleTestCase
 				],
 			],
 		];
+
+		yield 'constant types resolves to their generic form and prevents always true/false errors' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case26/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
