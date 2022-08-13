@@ -54,7 +54,10 @@ class AddPhpDocsNodeVisitor extends NodeVisitorAbstract
 		if ($value instanceof NeverType) {
 			return 'mixed';
 		} elseif ($value instanceof ConstantType) {
-			return $this->getTextValueType($value->generalize(GeneralizePrecision::lessSpecific()));
+			$generalType = $value->generalize(GeneralizePrecision::lessSpecific());
+			if ($generalType->equals($value) === false) {
+				return $this->getTextValueType($generalType);
+			}
 		}
 		return $value->describe(VerbosityLevel::precise());
 	}

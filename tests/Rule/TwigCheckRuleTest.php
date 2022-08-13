@@ -272,6 +272,11 @@ class TwigCheckRuleTest extends RuleTestCase
 				],
 			],
 		];
+
+		yield 'null type doesnt fail on recursion loop and ends with no errors' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case28/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
