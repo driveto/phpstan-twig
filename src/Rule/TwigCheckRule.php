@@ -18,6 +18,10 @@ use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use Twig\Error\SyntaxError;
 use function array_merge;
+use function get_object_vars;
+use function is_int;
+use function is_string;
+use function md5;
 use function sprintf;
 use function str_contains;
 use function str_ends_with;
@@ -145,7 +149,18 @@ final class TwigCheckRule implements Rule
 
 			$newError->file($newErrorFile);
 
-			$errors[] = $newError->build();
+			$newError = $newError->build();
+
+			$id = '';
+			foreach (get_object_vars($newError) as $newErrorProperty) {
+				if (is_string($newErrorProperty)) {
+					$id .= $newErrorProperty;
+				} elseif (is_int($newErrorProperty)) {
+					$id .= (string) $newErrorProperty;
+				}
+			}
+
+			$errors[md5($id)] = $newError;
 		}
 
 		return $errors;

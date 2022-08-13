@@ -38,7 +38,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			[
 				[
 					'Offset \'simpleVariable\' does not exist on array{}.',
-					12,
+					1,
 				],
 			],
 		];
@@ -53,7 +53,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			[
 				[
 					'Call to an undefined method Driveto\PhpstanTwig\Tests\Rule\TwigCheckRuleTestCase\Case4\Bar::nonExistingMethod().',
-					12,
+					1,
 				],
 			],
 		];
@@ -63,7 +63,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			[
 				[
 					'Call to an undefined method Driveto\PhpstanTwig\Tests\Rule\TwigCheckRuleTestCase\Case5\Foo::nonExistingMethod().',
-					12,
+					1,
 				],
 			],
 		];
@@ -83,7 +83,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			[
 				[
 					'Offset \'letter\' does not exist on array{numbers: array{int, int, int, int, int}, _seq: array{int, int, int, int, int}, number: int, _key: 0|1|2|3|4}.',
-					12,
+					2,
 				],
 			],
 		];
@@ -231,6 +231,16 @@ class TwigCheckRuleTest extends RuleTestCase
 		yield 'using extension function in main block and another in local block show no error' => [
 			__DIR__ . '/TwigCheckRuleTestCase/Case22/Controller.php',
 			[],
+		];
+
+		yield 'multiple errors on same line and file show only once in reported errors' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case23/Controller.php',
+			[
+				[
+					'Offset \'nonExistingVar\' does not exist on array{}.',
+					1,
+				],
+			],
 		];
 	}
 
