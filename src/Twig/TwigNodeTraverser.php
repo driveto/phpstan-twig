@@ -4,6 +4,7 @@ namespace Driveto\PhpstanTwig\Twig;
 
 use Driveto\PhpstanTwig\Twig\NodeVisitor\AddPhpDocsNodeVisitor;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\AddTypesToTwigExtensions;
+use Driveto\PhpstanTwig\Twig\NodeVisitor\CallDisplayOnParentTemplateDirectly;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RefactorTwigForLoop;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveAlwaysTrueConditionOnConstantString;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveDefaultNullCoalesce;
@@ -66,6 +67,10 @@ class TwigNodeTraverser
 
 		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor(new RemoveAlwaysTrueConditionOnConstantString());
+		$cleanAst = $nodeTraverser->traverse($cleanAst);
+
+		$nodeTraverser = new NodeTraverser();
+		$nodeTraverser->addVisitor(new CallDisplayOnParentTemplateDirectly());
 		$cleanAst = $nodeTraverser->traverse($cleanAst);
 
 		$prettyPrinter = new Standard();

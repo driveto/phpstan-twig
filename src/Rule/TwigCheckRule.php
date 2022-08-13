@@ -135,7 +135,7 @@ final class TwigCheckRule implements Rule
 				if ($error->getLine() !== null) {
 					$newError->line($lineNumberExtractor->getTwigLineNumber($error->getLine()));
 				}
-			} elseif (!str_ends_with($error->getFile(), $templateName)) {
+			} else {
 				$newErrorFile = sprintf('%s -> %s', $error->getFile(), $templateName);
 			}
 

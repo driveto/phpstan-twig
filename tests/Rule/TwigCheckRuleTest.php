@@ -212,6 +212,21 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case19/Controller.php',
 			[],
 		];
+
+		yield 'using variable defined in template in extended template show no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case20/Controller.php',
+			[],
+		];
+
+		yield 'using variable defined in template in extended template with wrond type show error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case21/Controller.php',
+			[
+				[
+					'Parameter #1 $value of method Driveto\PhpstanTwig\Tests\Rule\TwigCheckRuleTestCase\Case21\Foo::returnInt() expects int, string given.',
+					1,
+				],
+			],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
