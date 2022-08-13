@@ -17,6 +17,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
+use PHPStan\Type\Type;
 use function assert;
 use function md5;
 
@@ -30,7 +31,7 @@ class TwigNodeTraverser
 		$this->parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
 	}
 
-	/** @param array<int|string, string> $contextTypes */
+	/** @param array<int|string, Type> $contextTypes */
 	public function traverse(
 		string $templateName,
 		bool $renderMainContent,
@@ -56,7 +57,7 @@ class TwigNodeTraverser
 		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor(new AddPhpDocsNodeVisitor($contextTypes));
 		$nodeTraverser->addVisitor(new ReplaceTwigFilters());
-		$nodeTraverser->addVisitor(new ReplaceTwigGetAttribute());
+		$nodeTraverser->addVisitor(new ReplaceTwigGetAttribute($contextTypes));
 		$cleanAst = $nodeTraverser->traverse($cleanAst);
 
 		$nodeTraverser = new NodeTraverser();

@@ -5,6 +5,11 @@ namespace Driveto\PhpstanTwig\Twig\NodeVisitor;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\Type\ConstantType;
+use PHPStan\Type\GeneralizePrecision;
+use PHPStan\Type\NeverType;
+use PHPStan\Type\Type;
+use PHPStan\Type\VerbosityLevel;
 use function count;
 use function sprintf;
 use function str_starts_with;
@@ -12,10 +17,10 @@ use function str_starts_with;
 class AddPhpDocsNodeVisitor extends NodeVisitorAbstract
 {
 
-	/** @var array<int|string, string> */
+	/** @var array<int|string, Type> */
 	private array $contextVariables;
 
-	/** @param array<int|string, string> $contextVariables */
+	/** @param array<int|string, Type> $contextVariables */
 	public function __construct(array $contextVariables)
 	{
 		$this->contextVariables = $contextVariables;
@@ -30,7 +35,7 @@ class AddPhpDocsNodeVisitor extends NodeVisitorAbstract
 				} else {
 					$phpDocContent = "/**\n * @param array{";
 					foreach ($this->contextVariables as $name => $value) {
-						$phpDocContent .= sprintf("\n *     '%s': %s,", $name, $value);
+						$phpDocContent .= sprintf("\n *     '%s': %s,", $name, $this->getTextValueType($value));
 					}
 					$phpDocContent .= "\n * } \$context\n */";
 
@@ -41,6 +46,17 @@ class AddPhpDocsNodeVisitor extends NodeVisitorAbstract
 			}
 		}
 		return null;
+	}
+
+
+	private function getTextValueType(Type $value): string
+	{
+		if ($value instanceof NeverType) {
+			return 'mixed';
+		} elseif ($value instanceof ConstantType) {
+			return $this->getTextValueType($value->generalize(GeneralizePrecision::lessSpecific()));
+		}
+		return $value->describe(VerbosityLevel::precise());
 	}
 
 }

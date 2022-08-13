@@ -37,7 +37,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case2/Controller.php',
 			[
 				[
-					'Offset \'simpleVariable\' does not exist on array{}.',
+					'Offset \'simpleVariable\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					1,
 				],
 			],
@@ -82,7 +82,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case8/Controller.php',
 			[
 				[
-					'Offset \'letter\' does not exist on array{numbers: array{int, int, int, int, int}, _seq: array{int, int, int, int, int}, number: int, _key: 0|1|2|3|4}.',
+					'Offset \'letter\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject, numbers: non-empty-array<int, int>}.',
 					2,
 				],
 			],
@@ -92,8 +92,8 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case9/Controller.php',
 			[
 				[
-					'Offset \'number\' does not exist on array{numbers: array<int|string, int>, _seq: array<int|string, int>, number?: int, _key?: int|string}.',
-					12,
+					'Offset \'number\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject, numbers: array<int>}.',
+					4,
 				],
 			],
 		];
@@ -128,7 +128,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			[
 				[
 					'Parameter #1 $number of method Driveto\PhpstanTwig\Tests\Rule\TwigCheckRuleTestCase\Case14\Foo::printNumber() expects int, string given.',
-					16,
+					1,
 				],
 			],
 		];
@@ -147,16 +147,16 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case17/Controller.php',
 			[
 				[
-					'Offset \'foo\' does not exist on array{}.',
+					'Offset \'foo\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					1,
 				], [
-					'Offset \'bar\' does not exist on array{}.',
+					'Offset \'bar\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					3,
 				], [
-					'Offset \'hello\' does not exist on array{}.',
+					'Offset \'hello\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					9,
 				], [
-					'Offset \'foobar\' does not exist on array{}.',
+					'Offset \'foobar\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					6,
 				],
 			],
@@ -166,43 +166,43 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case18/Controller.php',
 			[
 				[
-					'Offset \'parent_var_1\' does not exist on array{}.',
+					'Offset \'parent_var_1\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					1,
 				],
 				[
-					'Offset \'parent_var_2\' does not exist on array{}.',
+					'Offset \'parent_var_2\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					3,
 				],
 				[
-					'Offset \'parent_var_4\' does not exist on array{}.',
+					'Offset \'parent_var_4\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					9,
 				],
 				[
-					'Offset \'parent_var_3\' does not exist on array{}.',
+					'Offset \'parent_var_3\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					6,
 				],
 				[
-					'Offset \'template_var_1\' does not exist on array{}.',
+					'Offset \'template_var_1\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					4,
 				],
 				[
-					'Offset \'child_1_var_2\' does not exist on array{}.',
+					'Offset \'child_1_var_2\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					5,
 				],
 				[
-					'Offset \'child_2_var_1\' does not exist on array{}.',
+					'Offset \'child_2_var_1\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					1,
 				],
 				[
-					'Offset \'child_2_var_2\' does not exist on array{}.',
+					'Offset \'child_2_var_2\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					3,
 				],
 				[
-					'Offset \'child_1_var_1\' does not exist on array{}.',
+					'Offset \'child_1_var_1\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					2,
 				],
 				[
-					'Offset \'template_var_2\' does not exist on array{}.',
+					'Offset \'template_var_2\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					8,
 				],
 			],
@@ -237,7 +237,7 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case23/Controller.php',
 			[
 				[
-					'Offset \'nonExistingVar\' does not exist on array{}.',
+					'Offset \'nonExistingVar\' does not exist on array{globalString: string, globalObject: Driveto\PhpstanTwig\Tests\Inc\GlobalObject}.',
 					1,
 				],
 			],
@@ -261,6 +261,16 @@ class TwigCheckRuleTest extends RuleTestCase
 		yield 'constant types resolves to their generic form and prevents always true/false errors' => [
 			__DIR__ . '/TwigCheckRuleTestCase/Case26/Controller.php',
 			[],
+		];
+
+		yield 'public variables on class resolves correctly and show error is used wrong' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case27/Controller.php',
+			[
+				[
+					'Parameter #1 $number of method Driveto\PhpstanTwig\Tests\Rule\TwigCheckRuleTestCase\Case27\ClassWithPublicProperties::returnInt() expects int, string given.',
+					1,
+				],
+			],
 		];
 	}
 

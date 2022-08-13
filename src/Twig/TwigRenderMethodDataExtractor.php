@@ -9,6 +9,7 @@ use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Twig\Environment;
 use function assert;
@@ -45,7 +46,7 @@ class TwigRenderMethodDataExtractor extends DataExtractor
 		return false;
 	}
 
-	/** @return array<int|string, string> */
+	/** @return array<int|string, Type> */
 	public function extract(Node $node, Scope $scope): array
 	{
 		$templateVariablesArgument = $node->args[1]?->value ?? null;
@@ -63,7 +64,7 @@ class TwigRenderMethodDataExtractor extends DataExtractor
 					$name = $keyType->getValue();
 					$value = $variableType->getOffsetValueType($keyType);
 
-					$localContextTypes[$name] = $this->getTextValueType($value);
+					$localContextTypes[$name] = $value;
 				}
 			}
 		} elseif ($templateVariablesArgument instanceof Node\Expr\Array_) {
@@ -77,7 +78,7 @@ class TwigRenderMethodDataExtractor extends DataExtractor
 				$newVariableName = $arrayItem->key->value;
 				$newVariableType = $scope->getType($arrayItem->value);
 
-				$localContextTypes[$newVariableName] = $this->getTextValueType($newVariableType);
+				$localContextTypes[$newVariableName] = $newVariableType;
 			}
 		}
 

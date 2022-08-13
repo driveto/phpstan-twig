@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Type;
 
 class TwigLoadTemplateBlockDataExtractor extends DataExtractor
 {
@@ -22,7 +23,7 @@ class TwigLoadTemplateBlockDataExtractor extends DataExtractor
 		return false;
 	}
 
-	/** @return array<int|string, string> */
+	/** @return array<int|string, Type> */
 	public function extract(Node $node, Scope $scope): array
 	{
 		$parentContextTypes = [];
@@ -33,7 +34,7 @@ class TwigLoadTemplateBlockDataExtractor extends DataExtractor
 				$name = $keyType->getValue();
 				$value = $variableType->getOffsetValueType($keyType);
 
-				$parentContextTypes[$name] = $this->getTextValueType($value);
+				$parentContextTypes[$name] = $value;
 			}
 		}
 

@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Type;
 
 class TwigLoadTemplateDataExtractor extends DataExtractor
 {
@@ -22,7 +23,7 @@ class TwigLoadTemplateDataExtractor extends DataExtractor
 		return false;
 	}
 
-	/** @return array<int|string, string> */
+	/** @return array<int|string, Type> */
 	public function extract(Node $node, Scope $scope): array
 	{
 		$localContextTypes = [];
@@ -34,7 +35,7 @@ class TwigLoadTemplateDataExtractor extends DataExtractor
 				$name = $keyType->getValue();
 				$value = $variableType->getOffsetValueType($keyType);
 
-				$parentContextTypes[$name] = $this->getTextValueType($value);
+				$parentContextTypes[$name] = $value;
 			}
 		}
 
@@ -54,7 +55,7 @@ class TwigLoadTemplateDataExtractor extends DataExtractor
 						$newVariableName = $includeVariable->key->value;
 						$newVariableType = $scope->getType($includeVariable->value);
 
-						$localContextTypes[$newVariableName] = $this->getTextValueType($newVariableType);
+						$localContextTypes[$newVariableName] = $newVariableType;
 					}
 				} elseif ($nextNextNodeValue instanceof Node\Expr\FuncCall && $nextNextNodeValue->name instanceof Node\Name\FullyQualified) {
 					$functionName = $nextNextNodeValue->name->toString();
@@ -77,7 +78,7 @@ class TwigLoadTemplateDataExtractor extends DataExtractor
 								$variableType = $scope->getType($newContextVariable->value->left->var);
 								$variableName = $newContextVariable->key->value;
 
-								$localContextTypes[$variableName] = $this->getTextValueType($variableType);
+								$localContextTypes[$variableName] = $variableType;
 							}
 						}
 					} elseif ($functionName === 'twig_array_merge') {
@@ -101,7 +102,7 @@ class TwigLoadTemplateDataExtractor extends DataExtractor
 								$variableType = $scope->getType($newContextVariable->value);
 								$variableName = $newContextVariable->key->value;
 
-								$localContextTypes[$variableName] = $this->getTextValueType($variableType);
+								$localContextTypes[$variableName] = $variableType;
 							}
 						}
 					}

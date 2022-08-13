@@ -5,9 +5,16 @@ namespace Driveto\PhpstanTwig\Twig\NodeVisitor;
 use Exception;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 
 class ReplaceTwigGetAttribute extends NodeVisitorAbstract
 {
+
+	/** @param array<int|string, Type> $contextVariables */
+	public function __construct(private array $contextVariables)
+	{
+	}
 
 	public function enterNode(Node $node)
 	{
@@ -45,10 +52,7 @@ class ReplaceTwigGetAttribute extends NodeVisitorAbstract
 							}
 						}
 
-						if ($contextValue instanceof Node\Expr\FuncCall
-							&& $contextValue->name instanceof Node\Name
-							&& $contextValue->name->toString() === 'twig_get_attribute'
-						) {
+						if ($this->isGetAttributeFuncCall($contextValue)) {
 							$fooNode = $this->enterNode($contextValue);
 							if ($fooNode instanceof Node\Expr) {
 								return new Node\Expr\MethodCall($fooNode, $method, $args);
@@ -64,17 +68,25 @@ class ReplaceTwigGetAttribute extends NodeVisitorAbstract
 					case 'any':
 						$value = $node->args[3]->value;
 
-						if (
-							$contextValue instanceof Node\Expr\FuncCall
-							&& $contextValue->name instanceof Node\Name
-							&& $contextValue->name->toString() === 'twig_get_attribute'
-						) {
+						if ($this->isGetAttributeFuncCall($contextValue)) {
 							$newNode = $this->enterNode($contextValue);
 							if ($newNode instanceof Node\Expr) {
 								return new Node\Expr\ArrayDimFetch($newNode, $value);
 							}
 
 						} elseif ($contextValue instanceof Node\Expr\ArrayDimFetch) {
+							if ($contextValue->dim instanceof Node\Scalar\String_) {
+								$contextValueName = $contextValue->dim->value;
+								$contextValueType = $this->contextVariables[$contextValueName] ?? null;
+								if ($contextValueType instanceof ObjectType
+									&& $value instanceof Node\Scalar\String_
+								) {
+									return new Node\Expr\PropertyFetch(
+										$contextValue,
+										$value->value,
+									);
+								}
+							}
 							return new Node\Expr\ArrayDimFetch($contextValue, $value);
 						}
 						throw new Exception();
@@ -86,6 +98,14 @@ class ReplaceTwigGetAttribute extends NodeVisitorAbstract
 			return null;
 		}
 		return null;
+	}
+
+
+	private function isGetAttributeFuncCall(Node $node): bool
+	{
+		return $node instanceof Node\Expr\FuncCall
+			&& $node->name instanceof Node\Name
+			&& $node->name->toString() === 'twig_get_attribute';
 	}
 
 }
