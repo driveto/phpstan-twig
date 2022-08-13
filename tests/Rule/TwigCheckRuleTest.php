@@ -112,6 +112,26 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case12/Controller.php',
 			[],
 		];
+
+		yield 'non existing twig function show error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case13/Controller.php',
+			[
+				[
+					'Failed to compile template. Exception: Unknown "nonExistingFunction" function.',
+					12,
+				],
+			],
+		];
+
+		yield 'wrong value type from extension function shows error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case14/Controller.php',
+			[
+				[
+					'Parameter #1 $number of method Driveto\PhpstanTwig\Tests\Rule\TwigCheckRuleTestCase\Case14\Foo::printNumber() expects int, string given.',
+					16,
+				],
+			],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array

@@ -14,7 +14,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use Twig\Error\SyntaxError;
 use function array_merge;
+use function sprintf;
 use function str_contains;
 
 /** @implements Rule<MethodCall> */
@@ -67,7 +69,18 @@ final class TwigCheckRule implements Rule
 			return [];
 		}
 
-		$compiledTemplate = $this->twigToPhpCompiler->compile($templateName);
+		try {
+			$compiledTemplate = $this->twigToPhpCompiler->compile($templateName);
+		} catch (SyntaxError $e) {
+			return [
+				RuleErrorBuilder::message(sprintf(
+					'Failed to compile template. Exception: %s',
+					$e->getMessage(),
+				))
+				->file($templateName)
+				->build(),
+			];
+		}
 
 		$templateWithTypes = $this->twigNodeTraverser->traverse(
 			$compiledTemplate,
