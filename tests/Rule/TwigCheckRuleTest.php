@@ -207,6 +207,11 @@ class TwigCheckRuleTest extends RuleTestCase
 				],
 			],
 		];
+
+		yield 'set used in block pair shows no errors' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case19/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
