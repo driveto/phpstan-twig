@@ -227,6 +227,11 @@ class TwigCheckRuleTest extends RuleTestCase
 				],
 			],
 		];
+
+		yield 'using extension function in main block and another in local block show no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case22/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array

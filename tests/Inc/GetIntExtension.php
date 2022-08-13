@@ -5,19 +5,19 @@ namespace Driveto\PhpstanTwig\Tests\Inc;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-class SampleExtension extends AbstractExtension
+class GetIntExtension extends AbstractExtension
 {
 
 	public function getFunctions(): array
 	{
 		return [
-			new TwigFunction('someFunction', [$this, 'getString']),
+			new TwigFunction('getIntFromExtension', [$this, 'getInt']),
 		];
 	}
 
-	public function getString(): string
+	public function getInt(): int
 	{
-		return '42';
+		return 42;
 	}
 
 }

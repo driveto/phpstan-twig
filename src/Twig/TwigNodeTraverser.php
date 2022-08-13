@@ -9,6 +9,7 @@ use Driveto\PhpstanTwig\Twig\NodeVisitor\RefactorTwigForLoop;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveAlwaysTrueConditionOnConstantString;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveDefaultNullCoalesce;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\RemoveTwigEscapeFilter;
+use Driveto\PhpstanTwig\Twig\NodeVisitor\RenameTwigTemplateClass;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\ReplaceTwigArrayAccess;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\ReplaceTwigGetAttribute;
 use Driveto\PhpstanTwig\Twig\NodeVisitor\SplitMainContextAndBlocksVisitor;
@@ -17,6 +18,7 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use function assert;
+use function md5;
 
 class TwigNodeTraverser
 {
@@ -74,6 +76,12 @@ class TwigNodeTraverser
 		$cleanAst = $nodeTraverser->traverse($cleanAst);
 
 		$prettyPrinter = new Standard();
+		$hash = md5($prettyPrinter->prettyPrintFile($cleanAst));
+
+		$nodeTraverser = new NodeTraverser();
+		$nodeTraverser->addVisitor(new RenameTwigTemplateClass($hash));
+		$cleanAst = $nodeTraverser->traverse($cleanAst);
+
 		return $prettyPrinter->prettyPrintFile($cleanAst) . "\n";
 	}
 
