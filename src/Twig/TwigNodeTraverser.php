@@ -43,7 +43,7 @@ class TwigNodeTraverser
 
 		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor(new ReplaceTwigArrayAccess());
-		$cleanAst = $nodeTraverser->traverse($ast);
+		$cleanAst = $nodeTraverser->traverse($cleanAst);
 
 		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor(new RemoveDefaultNullCoalesce());

@@ -3,6 +3,7 @@
 namespace Driveto\PhpstanTwig\Rule;
 
 use Driveto\PhpstanTwig\Twig\TwigAnalyzer;
+use Driveto\PhpstanTwig\Twig\TwigLineNumberExtractor;
 use Driveto\PhpstanTwig\Twig\TwigLoadTemplateBlockDataExtractor;
 use Driveto\PhpstanTwig\Twig\TwigLoadTemplateDataExtractor;
 use Driveto\PhpstanTwig\Twig\TwigNodeTraverser;
@@ -19,6 +20,7 @@ use Twig\Error\SyntaxError;
 use function array_merge;
 use function sprintf;
 use function str_contains;
+use function str_ends_with;
 
 /** @implements Rule<MethodCall> */
 final class TwigCheckRule implements Rule
@@ -61,9 +63,11 @@ final class TwigCheckRule implements Rule
 	public function processNode(Node $node, Scope $scope): array
 	{
 		$renderMainContent = true;
+		$callerName = null;
 		if ($this->twigRenderMethodDataExtractor->isNodeSupported($node, $scope)) {
 			$templateName = $this->twigRenderMethodDataExtractor->extractTemplateName($node, $scope);
 			$localContextTypes = $this->twigRenderMethodDataExtractor->extract($node, $scope);
+			$callerName = $scope->getFile();
 		} elseif ($this->twigLoadTemplateDataExtractor->isNodeSupported($node, $scope)) {
 			$templateName = $this->twigLoadTemplateDataExtractor->extractTemplateName($node, $scope);
 			$localContextTypes = $this->twigLoadTemplateDataExtractor->extract($node, $scope);
@@ -99,12 +103,19 @@ final class TwigCheckRule implements Rule
 			array_merge($this->twigToPhpCompiler->getGlobalTypes(), $localContextTypes),
 		);
 
+		$lineNumberExtractor = new TwigLineNumberExtractor($templateWithTypes);
+
 		$analyserResult = $this->twigAnalyzer->analyze($templateWithTypes);
-		return $this->processResult($analyserResult, $templateName);
+		return $this->processResult($analyserResult, $templateName, $lineNumberExtractor, $callerName);
 	}
 
 	/** @return RuleError[] */
-	private function processResult(FileAnalyserResult $analyserResult, string $templateName): array
+	private function processResult(
+		FileAnalyserResult $analyserResult,
+		string $templateName,
+		TwigLineNumberExtractor $lineNumberExtractor,
+		?string $callerName,
+	): array
 	{
 		$errors = [];
 		foreach ($analyserResult->getErrors() as $error) {
@@ -113,9 +124,28 @@ final class TwigCheckRule implements Rule
 			) {
 				continue;
 			}
-			$errors[] = RuleErrorBuilder::message($error->getMessage())
-				->file($templateName)
-				->build();
+
+			$newError = RuleErrorBuilder::message($error->getMessage());
+			if ($error->getLine() !== null) {
+				$newError->line($error->getLine());
+			}
+
+			$newErrorFile = $templateName;
+			if (!str_ends_with($error->getFile(), '.twig')) {
+				if ($error->getLine() !== null) {
+					$newError->line($lineNumberExtractor->getTwigLineNumber($error->getLine()));
+				}
+			} elseif (!str_ends_with($error->getFile(), $templateName)) {
+				$newErrorFile = sprintf('%s -> %s', $error->getFile(), $templateName);
+			}
+
+			if ($callerName !== null) {
+				$newErrorFile = sprintf('%s -> %s', $newErrorFile, $callerName);
+			}
+
+			$newError->file($newErrorFile);
+
+			$errors[] = $newError->build();
 		}
 
 		return $errors;

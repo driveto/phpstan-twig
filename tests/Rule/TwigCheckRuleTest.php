@@ -142,6 +142,71 @@ class TwigCheckRuleTest extends RuleTestCase
 			__DIR__ . '/TwigCheckRuleTestCase/Case16/Controller.php',
 			[],
 		];
+
+		yield 'test error message show correct line number ' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case17/Controller.php',
+			[
+				[
+					'Offset \'foo\' does not exist on array{}.',
+					1,
+				], [
+					'Offset \'bar\' does not exist on array{}.',
+					3,
+				], [
+					'Offset \'hello\' does not exist on array{}.',
+					9,
+				], [
+					'Offset \'foobar\' does not exist on array{}.',
+					6,
+				],
+			],
+		];
+
+		yield 'test error message show correct line number with nested templates' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case18/Controller.php',
+			[
+				[
+					'Offset \'parent_var_1\' does not exist on array{}.',
+					1,
+				],
+				[
+					'Offset \'parent_var_2\' does not exist on array{}.',
+					3,
+				],
+				[
+					'Offset \'parent_var_4\' does not exist on array{}.',
+					9,
+				],
+				[
+					'Offset \'parent_var_3\' does not exist on array{}.',
+					6,
+				],
+				[
+					'Offset \'template_var_1\' does not exist on array{}.',
+					4,
+				],
+				[
+					'Offset \'child_1_var_2\' does not exist on array{}.',
+					5,
+				],
+				[
+					'Offset \'child_2_var_1\' does not exist on array{}.',
+					1,
+				],
+				[
+					'Offset \'child_2_var_2\' does not exist on array{}.',
+					3,
+				],
+				[
+					'Offset \'child_1_var_1\' does not exist on array{}.',
+					2,
+				],
+				[
+					'Offset \'template_var_2\' does not exist on array{}.',
+					8,
+				],
+			],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
