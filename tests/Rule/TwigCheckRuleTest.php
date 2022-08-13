@@ -132,6 +132,11 @@ class TwigCheckRuleTest extends RuleTestCase
 				],
 			],
 		];
+
+		yield 'using loop variable in for loop shows no error' => [
+			__DIR__ . '/TwigCheckRuleTestCase/Case15/Controller.php',
+			[],
+		];
 	}
 
 	public static function getAdditionalConfigFiles(): array
