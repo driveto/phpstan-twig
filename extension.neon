@@ -9,6 +9,7 @@ services:
 	- Driveto\PhpstanTwig\Twig\TwigLoadTemplateDataExtractor
 	- Driveto\PhpstanTwig\Twig\TwigNodeTraverser
 	- Driveto\PhpstanTwig\Twig\TwigRenderMethodDataExtractor
+	- Driveto\PhpstanTwig\Twig\TwigLoadTemplateBlockDataExtractor
 	- Driveto\PhpstanTwig\Twig\TwigToPhpCompiler
 	- Driveto\PhpstanTwig\Twig\TwigEnvironmentFactory(%twig.twigEnvironmentLoader%)
 

@@ -1,0 +1,9 @@
+{% extends '@Tests/Case18/parent.html.twig' %}
+
+{% block main %}
+    {{ template_var_1 }}
+
+    {% include '@Tests/Case18/child_1.html.twig' %}
+
+    {{ template_var_2 }}
+{% endblock %}

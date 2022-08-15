@@ -1,0 +1,7 @@
+{% extends '@Tests/Case16/parent.html.twig' %}
+{% set someStringValue = 'someString' %}
+
+{% block header %}
+    {{ foo.returnString(someStringValue) }}
+{% endblock %}
+

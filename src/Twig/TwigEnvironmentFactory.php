@@ -16,6 +16,7 @@ class TwigEnvironmentFactory
 		assert($this->twig instanceof Environment);
 
 		$this->twig->disableDebug();
+		$this->twig->disableStrictVariables();
 	}
 
 

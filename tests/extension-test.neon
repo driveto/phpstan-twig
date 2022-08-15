@@ -1,3 +1,4 @@
 parameters:
+	checkExplicitMixed: true
 	twig:
 		twigEnvironmentLoader: tests/TwigEnvironmentLoader.php

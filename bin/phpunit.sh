@@ -8,4 +8,4 @@ PROJECT_ROOT="$(dirname "$DIR" )"
 cd "$PROJECT_ROOT"
 set -x
 
-php vendor/bin/phpunit
+php -d memory_limit=-1 vendor/bin/phpunit
